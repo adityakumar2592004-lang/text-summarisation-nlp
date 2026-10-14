@@ -1,0 +1,84 @@
+# ============================================================
+# config.yaml  –  Central configuration for Text Summarisation
+# ============================================================
+# All paths are relative to the project root unless noted.
+# Edit this file to change dataset sizes, model names, or any
+# generation hyper-parameter without touching the source code.
+
+# ── Dataset ────────────────────────────────────────────────
+dataset:
+  name: "cnn_dailymail"          # Change to "xsum", "samsum", or "scientific_papers" (arXiv) later
+  version: "3.0.0"               # CNN/DailyMail version string
+  text_column: "article"         # Input text column name
+  summary_column: "highlights"   # Reference summary column name
+
+  # Number of samples to use (configurable for CPU / Colab)
+  # ⚡ Colab/Kaggle GPU tip: set train=10000, validation=500, test=500
+  subset:
+    train: 2000
+    validation: 200
+    test: 200
+
+  # Quick-test override (used by pytest and CI)
+  quick_test:
+    train: 20
+    validation: 10
+    test: 10
+
+# ── Pre-processing ─────────────────────────────────────────
+preprocessing:
+  max_input_length: 512          # Tokens – T5 context window
+  max_target_length: 128         # Tokens – max summary length
+  bart_max_input_length: 1024   # BART has a larger context window
+
+# ── Extractive models ──────────────────────────────────────
+extractive:
+  top_k: 3                       # Number of sentences to extract
+
+# ── Abstractive models ─────────────────────────────────────
+abstractive:
+  bart:
+    model_name: "facebook/bart-base"      # Switch to facebook/bart-large-cnn for better quality
+    checkpoint_dir: "models/bart_finetuned"
+  t5:
+    model_name: "t5-small"               # Switch to t5-base for better quality
+    checkpoint_dir: "models/t5_finetuned"
+    prefix: "summarize: "                # T5 task prefix
+
+# ── Generation (beam search) ───────────────────────────────
+generation:
+  num_beams: 4
+  min_length: 30
+  max_length: 128
+  no_repeat_ngram_size: 3
+  length_penalty: 2.0
+  early_stopping: true
+
+# ── Training ───────────────────────────────────────────────
+training:
+  output_dir: "models"
+  num_train_epochs: 3
+  per_device_train_batch_size: 4   # Lower to 1 or 2 on CPU
+  per_device_eval_batch_size: 4
+  warmup_steps: 100
+  weight_decay: 0.01
+  logging_steps: 50
+  eval_strategy: "epoch"
+  save_strategy: "epoch"
+  load_best_model_at_end: true
+  metric_for_best_model: "rouge1"
+  predict_with_generate: true
+  fp16: false                      # Set to true if CUDA GPU is available
+
+# ── Evaluation ─────────────────────────────────────────────
+evaluation:
+  results_dir: "results"
+  metrics_file: "results/metrics.csv"
+  chart_file: "results/comparison.png"
+  examples_file: "results/examples.md"
+  num_examples: 5                  # Side-by-side examples to save
+  bertscore_model: "distilbert-base-uncased"   # Lightweight BERTScore model
+
+# ── Misc ───────────────────────────────────────────────────
+seed: 42
+log_level: "INFO"

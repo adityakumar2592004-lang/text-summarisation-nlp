@@ -1,0 +1,2 @@
+# This file keeps the results/ directory in version control.
+# Actual prediction CSVs and charts are generated at runtime.
