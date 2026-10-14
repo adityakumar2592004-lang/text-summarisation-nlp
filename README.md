@@ -1,4 +1,7 @@
 # 📝 Text Summarisation using NLP
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://AAPKA-STREAMLIT-LINK.streamlit.app)
+
+🔗 **Live Web Demo:** [Open Live App](https://text-summarisation-nlp.streamlit.app/)
 
 > **B.Tech (AI & ML) Minor Project**  
 > Comparing extractive and abstractive text summarisation with ROUGE and BERTScore evaluation.
